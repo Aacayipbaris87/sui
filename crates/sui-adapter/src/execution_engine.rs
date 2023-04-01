@@ -50,18 +50,6 @@ use sui_types::temporary_store::TemporaryStore;
 
 checked_arithmetic! {
 
-pub struct AdvanceEpochParams {
-    pub epoch: u64,
-    pub next_protocol_version: ProtocolVersion,
-    pub storage_charge: u64,
-    pub computation_charge: u64,
-    pub storage_rebate: u64,
-    pub non_refundable_storage_fee: u64,
-    pub storage_fund_reinvest_rate: u64,
-    pub reward_slashing_rate: u64,
-    pub epoch_start_timestamp_ms: u64,
-}
-
 #[instrument(name = "tx_execute_to_effects", level = "debug", skip_all)]
 pub fn execute_transaction_to_effects<
     Mode: ExecutionMode,
@@ -536,6 +524,7 @@ fn advance_epoch<S: BackingPackageStore + ParentSync + ChildObjectResolver>(
         temporary_store.drop_writes();
         // Must reset the storage rebate since we are re-executing.
         gas_status.reset_storage_cost_and_rebate();
+        //let sui_system_state = get_sui_system_state(temporary_store.)?;
         let advance_epoch_safe_mode_pt =
             construct_advance_epoch_safe_mode_pt(&params, protocol_config)?;
         programmable_transactions::execution::execute::<_, execution_mode::System>(
